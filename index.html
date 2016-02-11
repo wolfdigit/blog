@@ -17,6 +17,7 @@ else {
 }
 if (file=="") file = "index.md";
 document.title = file;
+dir = meUrl.substring(0, meUrl.lastIndexOf("/")+1 );
 
 $.get( file, function( data ) {
   $( "xmp" ).html( data );
@@ -28,7 +29,14 @@ $.get( file, function( data ) {
       if ( url.match(/\.md$/) ) {
         pos = url.indexOf("//");
         if ( pos<0 ) {
-          $(this).attr("href", meUrl + "?" + url);
+          pos2 = url.lastIndexOf("/");
+          if (pos2<0) {
+             newUrl = meUrl + "?" + url;
+          }
+          else {
+            newUrl = dir + url.substring(0, pos2+1) + "?" + url.substring(pos2+1);
+          }
+          $(this).attr("href", newUrl);
         }
       }
     });
