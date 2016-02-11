@@ -1,0 +1,35 @@
+**quodlibet**是我最喜歡的音樂播放器，沒有之一  
+因為它可以用音樂檔的metadata整理資料庫，也可以用資料夾結構找到檔案，可以用關鍵字搜尋metadata的歌手、專輯、歌名等等欄位，同時還可以對metadata作編輯維護  
+目前處理一萬五千首的音樂庫完全無壓力  
+還可以在一萬五千首歌裡面抽牌隨機播放  XDD
+
+接下來想做的事就是想要隨時隨地聽到自己的音樂庫啦 XD  
+所以要想辦法把quodlibet接上網路串流
+
+以上廢話
+===
+
+quodlibet的音樂播放backend預設是用gstreamer，也可以改用xine  
+我就直接用預設的gstreamer囉  
+在`偏好設定`裡可以自訂gstreamer的pipeline  
+考慮常用的網路串流方式，例如_youtube直播_或_ustream.tv_，都是有影像加聲音，考慮加個什麼畫面上去就好  
+可惜quodlibet裡面的gstreamer pipeline似乎無法支援mux影像，所以作罷  
+
+後來用`gst-inspect`查到，gstreamer裡面有一個element叫`shout2send`完全符合我的需求！  
+所以改用shoutcast網路廣播
+
+採用的廣播hosting是[listen2myradio.com](http://listen2myradio.com/)，免費、不限音質(嗎?)、而且可以從內網推送出去
+
+pipeline如下
+```
+queue ! audioconvert ! vorbisenc bitrate=320000 ! oggmux ! shout2send ip=IP port=PORT password=PASSWORD mount=/stream
+```
+
+播起來有時候會卡卡的，不確定是上傳頻寬的問題還是下載頻寬的問題還是什麼，不過大部分時間還算順暢
+
+future works
+---
+
+* 有時候一首播完會卡住沒跳到下一首，目前還不知道怎麼解決
+* 想要用`tee`分成網路串流和本地音效輸出都聽得到，可惜quodlibet裡面似乎沒辦法用`tee`。  
+  打算用`shmsink`先暫存到local，再另外`gst-launch`一個pipeline來把音訊丟出去
