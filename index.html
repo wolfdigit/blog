@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html>
-<title>blog index</title>
-
-<xmp theme="united" style="display:none;">
-|date|article|
-|---|---:|
-| 2016-02-11 | [quodlibet webcast](20160211-quodlibetwebcast.html) |
-
-template:
-===
-
-```html
-<!DOCTYPE html>
-<html>
 <title>Hello Strapdown</title>
-
+<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 <xmp theme="readable">
-# Markdown text goes in here
-
-</xmp&gt;
-
-<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
-</html>
-```
 </xmp>
+<script>
+url = window.location.href;
+pos = url.indexOf('?');
+if (pos<0) {
+  file = "";
+  meUrl = url;
+}
+else {
+  file = url.substring( pos+1 );
+  meUrl = url.substring( 0, pos-1 );
+}
+if (file=="") file = "tmp.md";
+document.title = file;
 
-<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+$.get( file, function( data ) {
+  $( "xmp" ).html( data );
+  
+  $.getScript("http://strapdownjs.com/v/0.2/strapdown.js").done(function() {
+    $( "#content a" ).each(function() {
+      //console.log($(this));
+      url = $(this).attr("href");
+      console.log(url);
+      if ( url.match(/\.md$/) ) {
+        pos = url.indexOf("//");
+        if ( pos<0 ) {
+          $(this).attr("href", meUrl + "?" + url);
+        }
+      }
+      //console.log( $(this).href );
+    });
+  });
+
+}, 'text');
+</script>
 </html>
