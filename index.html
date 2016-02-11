@@ -15,7 +15,7 @@ else {
   file = url.substring( pos+1 );
   meUrl = url.substring( 0, pos-1 );
 }
-if (file=="") file = "tmp.md";
+if (file=="") file = "index.md";
 document.title = file;
 
 $.get( file, function( data ) {
@@ -23,7 +23,6 @@ $.get( file, function( data ) {
   
   $.getScript("http://strapdownjs.com/v/0.2/strapdown.js").done(function() {
     $( "#content a" ).each(function() {
-      //console.log($(this));
       url = $(this).attr("href");
       console.log(url);
       if ( url.match(/\.md$/) ) {
@@ -32,7 +31,6 @@ $.get( file, function( data ) {
           $(this).attr("href", meUrl + "?" + url);
         }
       }
-      //console.log( $(this).href );
     });
   });
 
